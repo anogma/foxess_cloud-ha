@@ -179,7 +179,7 @@ class FoxESSEntity(CoordinatorEntity, SensorEntity):
 
     _attr_has_entity_name = True
 
-    def __init__(self, coordinator, id: str, attr_name: str, context=None):
+    def __init__(self, coordinator, id: str, attr_name: str, context=None) -> None:
         """Initialize the entity."""
         super().__init__(coordinator, context)
         self.device_sn = coordinator.config_entry.data[CONFIG_DEVICE_SN]
