@@ -4,7 +4,7 @@
   "codeowners": ["@anogma"],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/anogma/foxess-ha",
+  "documentation": "https://github.com/anogma/foxess_cloud-ha",
   "iot_class": "local_polling",
-  "version": "0.0.2-alpha1"
+  "version": "0.0.2"
 }
