@@ -1,0 +1,24 @@
+{
+  "config": {
+    "flow_title": "FoxESS Cloud",
+    "step": {
+      "user": {
+        "title": "FoxESS Cloud Configuration",
+        "description": "Configure your FoxESS Cloud account and device.",
+        "data": {
+          "api_key": "API Key",
+          "device_name": "Device Name",
+          "device_sn": "Device SN"
+        }
+      }
+    },
+    "error": {
+      "invalid_api_key": "Invalid API key",
+      "api_error": "Could not reach FoxESS Cloud API",
+      "unknown": "Unexpected error"
+    },
+    "abort": {
+      "already_configured": "This device is already configured"
+    }
+  }
+}
