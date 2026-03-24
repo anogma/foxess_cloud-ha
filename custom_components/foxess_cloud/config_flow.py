@@ -10,7 +10,7 @@ from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import CONFIG_API_KEY, CONFIG_DEVICE_NAME, CONFIG_DEVICE_SN, DOMAIN
-from .foxess_cloud import FoxESSCloud, FoxESSCloudException
+from .foxess_cloud_api import FoxESSCloud, FoxESSCloudException
 
 _LOGGER = logging.getLogger(__name__)
 
