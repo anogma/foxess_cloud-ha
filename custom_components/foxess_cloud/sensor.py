@@ -3,6 +3,7 @@
 import logging
 
 from homeassistant.components.sensor import (
+    RestoreEntity,
     SensorDeviceClass,
     SensorEntity,
     SensorStateClass,
@@ -46,8 +47,9 @@ async def async_setup_entry(
     await coordinator.async_config_entry_first_refresh()
 
     pv_count = coordinator.get_pv_count()
+    status_entity = FoxESSInverterStatus(coordinator, "status", "Status")
     entities = [
-        FoxESSInverterStatus(coordinator, "status", "Status"),
+        status_entity,
         FoxESSPower(coordinator, "pv_power", "PV Power", "pvPower"),
         FoxESSRunningState(coordinator, "running_state", "Running State"),
         # Temperatures
@@ -116,12 +118,9 @@ async def async_setup_entry(
             "cumulative",
             data_key=DATA_DEVICE_GENERATION,
         ),
-        FoxESSEnergy(
+        FoxESSEnergyToday(
             coordinator,
-            "pv_energy_today",
-            "PV Energy Generation Today",
-            "today",
-            data_key=DATA_DEVICE_GENERATION,
+            status_entity
         ),
         FoxESSEnergy(
             coordinator,
@@ -229,9 +228,10 @@ class FoxESSFloatVariableEntity(FoxESSEntity):
     @property
     def native_value(self) -> float | None:
         """Return the state of the sensor."""
-        return self.coordinator.current_data.get(self.data_key, {}).get(
+        returned_value = self.coordinator.current_data.get(self.data_key, {}).get(
             self.variable, None
         )
+        return float(returned_value) if returned_value is not None else None
 
     @property
     def available(self) -> bool:
@@ -302,6 +302,41 @@ class FoxESSEnergy(FoxESSFloatVariableEntity):
     _attr_state_class: SensorStateClass = SensorStateClass.TOTAL_INCREASING
     _attr_device_class = SensorDeviceClass.ENERGY
     _attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
+
+class FoxESSEnergyToday(FoxESSEnergy, RestoreEntity):
+    """Sensor representing energy values for today, with state class TOTAL_INCREASING and device class ENERGY."""
+
+    _attr_state_class: SensorStateClass = SensorStateClass.TOTAL_INCREASING
+    _attr_device_class = SensorDeviceClass.ENERGY
+    _attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
+
+    def __init__(self, coordinator, status_entity: FoxESSInverterStatus, context=None) -> None:
+        """Initialize the entity."""
+        super().__init__(coordinator, "pv_energy_today", "PV Energy Generation Today", "today", data_key=DATA_DEVICE_GENERATION, context=context)
+        self.status_entity = status_entity
+        self.last_state = None
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+
+        last_state = await self.async_get_last_state()
+        if last_state is None:
+            return
+
+        # Update the coordinator's current data with the restored state
+        coordinator_data = self.coordinator.current_data.get(self.data_key, {})
+        coordinator_data[self.variable] = last_state.state
+        self.coordinator.current_data[self.data_key] = coordinator_data
+
+        self.last_state = last_state.state
+
+    @property
+    def native_value(self) -> str | None:
+        """Return the state of the sensor."""
+        if self.status_entity.native_value == "online":
+            self.last_state = super().native_value
+        return self.last_state
+
 
 
 class FoxESSPower(FoxESSFloatVariableEntity):
