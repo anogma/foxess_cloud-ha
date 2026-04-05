@@ -19,7 +19,7 @@ from .const import (
     DEVICE_RT_DATA_VARIABLES,
     DOMAIN,
 )
-from .foxess_cloud_api import FoxESSCloud
+from .foxess_cloud_api import FoxESSCloud, FoxESSCloudException
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -70,22 +70,36 @@ class FoxESSDataUpdateCoordinator(DataUpdateCoordinator):
 
         if self.next_update_device <= 0:
             _LOGGER.debug("Updating device detail data")
-            device_detail = await self.client.get_device_detail(self.device_sn)
-            self.current_data[DATA_DEVICE_DETAIL] = device_detail
-            self.next_update_device = GET_DEVICE_DETAIL_INTERVAL
-            _LOGGER.debug(
-                "Device detail data updated successfully. Got: %s", device_detail
-            )
+            try:
+                device_detail = await self.client.get_device_detail(self.device_sn)
+                self.current_data[DATA_DEVICE_DETAIL] = device_detail
+                self.next_update_device = GET_DEVICE_DETAIL_INTERVAL
+                _LOGGER.debug(
+                    "Device detail data updated successfully. Got: %s", device_detail
+                )
+            except FoxESSCloudException:
+                # We could mark as unavailable, but device information doesn't change often, so we just keep old data and log the error
+                _LOGGER.exception(
+                    "Error while updating device detail (%s)", self.device_sn
+                )
 
         if self.next_update_generation <= 0:
             _LOGGER.debug("Updating device generation data")
-            device_generation = await self.client.get_device_generation(self.device_sn)
-            self.current_data[DATA_DEVICE_GENERATION] = device_generation
-            self.next_update_generation = GET_GENERATION_INTERVAL
-            _LOGGER.debug(
-                "Device generation data updated successfully. Got: %s",
-                device_generation,
-            )
+            try:
+                device_generation = await self.client.get_device_generation(
+                    self.device_sn
+                )
+                self.current_data[DATA_DEVICE_GENERATION] = device_generation
+                self.next_update_generation = GET_GENERATION_INTERVAL
+                _LOGGER.debug(
+                    "Device generation data updated successfully. Got: %s",
+                    device_generation,
+                )
+            except FoxESSCloudException:
+                _LOGGER.exception(
+                    "Error while updating device generation data (%s)", self.device_sn
+                )
+                self.current_data[DATA_DEVICE_GENERATION] = {}
 
         if self.next_update_rt_data <= 0:
             _LOGGER.debug("Updating device real-time data")
@@ -97,8 +111,10 @@ class FoxESSDataUpdateCoordinator(DataUpdateCoordinator):
                     "Device real-time data updated successfully. Got: %s",
                     real_time_data,
                 )
-            except Exception as e:
-                _LOGGER.error("Error updating device real-time data: %s", e)
+            except FoxESSCloudException:
+                _LOGGER.exception(
+                    "Error updating device real-time data (%s)", self.device_sn
+                )
                 # Data must me marked as unavailable if error occurs, otherwise old data will be shown
                 real_time_data = {}
             self.current_data[DATA_DEVICE_RT_DATA] = real_time_data
