@@ -1,47 +1,58 @@
-# FoxESS Cloud for Home Assistant
+# 🌤️ FoxESS Cloud for Home Assistant
 
-Custom Home Assistant integration that queries the FoxESS Cloud API and exposes inverter data as sensor entities.
+A custom [Home Assistant](https://www.home-assistant.io) integration that connects to the **FoxESS Cloud API** to fetch inverter data and expose it as sensor entities ⚡.
 
-## What This Integration Does
+This integration uses the **modern UI Flow**, which simplifies the configuration process, requires **no restarts**, and groups sensor entities into **area-capable devices** 🧩.
 
-- Provides setup through the Home Assistant UI (`Config Flow`)
-- Validates the API key during configuration
-- Creates sensors for inverter status, generation, consumption, and electrical values
-- Automatically detects the number of available PV inputs on the device
-- Periodically refreshes data from the FoxESS cloud
+## ⚙️ Installation
 
-## Requirements
+### 📦 Manual Installation
 
-- A valid FoxESS Cloud API key
-- The device serial number
-
-## Installation
-
-At the moment, the installation method is manual.
-
-1. Copy the `custom_components/foxess_cloud` folder into the `config/custom_components/` directory of your Home Assistant installation.
+1. Copy the contents of `custom_components/foxess_cloud` to:  
+   `/config/custom_components/foxess_cloud`
 2. Restart Home Assistant.
-3. Go to **Settings > Devices & Services > Add Integration**.
-4. Search for **FoxESS Cloud**.
 
-## Configuration
+## 🔧 Configuration
 
-When adding the integration, the setup asks for:
+1. Go to **Settings → Devices & Services → Add Integration**
+2. Search for **FoxESS Cloud**
+3. Enter the following information:
 
-- `API Key`: FoxESS Cloud API access key
-- `Device SN`: inverter or device serial number
-- `Device Name`: friendly name shown in Home Assistant
+   - **API Key** 🗝️
+     Log in to [FoxESS Cloud](https://www.foxesscloud.com/), click your **User Icon → User Profile → API Management → Private Token**, then click **Generate API Key**.
 
-## Update Frequency
+   - **Device SN** 🔢
+     The serial number of your inverter.
 
-The integration coordinator runs on a 1-minute cycle, with separate internal refresh windows for each data group:
+   - **Device Name** 🏷️
+     An optional name to identify this device in Home Assistant.
 
-- Device details: approximately every 15 minutes
-- Generation data: approximately every 5 minutes
-- Real-time data: approximately every 2 minutes
+## ⏱️ Update Frequency
 
-## Current Limitations
+This integration updates data automatically with different refresh intervals per group:
 
-- The integration currently doesn't expose battery information
-- There are currently no repository-specific HACS installation instructions
-- The project is still in alpha
+| Data Group       | Refresh Interval |
+|------------------|------------------|
+| Device details   | ~15 minutes      |
+| Generation data  | ~5 minutes       |
+| Real-time data   | ~2 minutes       |
+
+
+## 🧩 Entities Provided
+
+The integration exposes the following entities (depending on inverter model):
+
+`TODO`
+
+## ⚠️ Current Limitations
+
+- 🚧 The project is still in **alpha stage**  
+- Requires an **active FoxESS Cloud account** with generated API key
+
+## ❤️ Contribute
+
+Issues and pull requests are welcome!  
+
+### 🌐 Links
+- 🏠 [Home Assistant](https://www.home-assistant.io)
+- ☁️ [FoxESS Cloud](https://www.foxesscloud.com/)
