@@ -48,8 +48,29 @@ async def async_setup_entry(
     pv_count = coordinator.get_pv_count()
     entities = [
         FoxESSInverterStatus(coordinator, "status", "Status"),
+        FoxESSEnergy(
+            coordinator,
+            "today_yield",
+            "Generation Today",
+            "todayYield",
+        ),
         FoxESSPower(coordinator, "pv_power", "PV Power", "pvPower"),
         FoxESSRunningState(coordinator, "running_state", "Running State"),
+        # R
+        FoxESSCurrent(coordinator, "r_current", "R Current", "RCurrent"),
+        FoxESSFrequency(coordinator, "r_frequency", "R Frequency", "RFreq"),
+        FoxESSPower(coordinator, "r_power", "R Power", "RPower"),
+        FoxESSVoltage(coordinator, "r_voltage", "R Voltage", "RVolt"),
+        # T
+        FoxESSCurrent(coordinator, "t_current", "T Current", "TCurrent"),
+        FoxESSFrequency(coordinator, "t_frequency", "T Frequency", "TFreq"),
+        FoxESSPower(coordinator, "t_power", "T Power", "TPower"),
+        FoxESSVoltage(coordinator, "t_voltage", "T Voltage", "TVolt"),
+        # S
+        FoxESSCurrent(coordinator, "s_current", "S Current", "SCurrent"),
+        FoxESSFrequency(coordinator, "s_frequency", "S Frequency", "SFreq"),
+        FoxESSPower(coordinator, "s_power", "S Power", "SPower"),
+        FoxESSVoltage(coordinator, "s_voltage", "S Voltage", "SVolt"),
         # Temperatures
         FoxESSTemperature(
             coordinator,
@@ -63,8 +84,13 @@ async def async_setup_entry(
         FoxESSTemperature(
             coordinator, "inv_temperature", "Inverter Temperature", "invTemperation"
         ),
-        FoxESSPower(coordinator, "load_power", "Load Power", "loads"),
+        FoxESSTemperature(
+            coordinator, "dsp_temperature", "DSP Temperature", "dspTemperature"
+        ),
+        # Other variables
+        FoxESSPower(coordinator, "load_power", "Load Power", "loadsPower"),
         FoxESSPower(coordinator, "output_power", "Output Power", "generationPower"),
+        FoxESSPower(coordinator, "feedin_power", "Feed-in Power", "feedinPower"),
         FoxESSPower(
             coordinator,
             "grid_consumption_power",
@@ -75,31 +101,31 @@ async def async_setup_entry(
         FoxESSEnergy(
             coordinator,
             "generation",
-            "Cumulative Energy Generation",
+            "Cumulative Generation",
             "generation",
         ),
         FoxESSEnergy(
             coordinator,
             "grid_consumption",
-            "Grid Consumption Energy",
+            "Grid Consumption",
             "gridConsumption",
         ),
         FoxESSEnergy(
             coordinator,
             "grid_consumption_2",
-            "Grid Consumption Energy 2",
+            "Grid Consumption 2",
             "gridConsumption2",
         ),
-        FoxESSEnergy(coordinator, "load_energy", "Load Energy", "loadsPower"),
+        FoxESSEnergy(coordinator, "load_energy", "Load Energy", "loads"),
         FoxESSEnergy(
             coordinator,
-            "feedin_power",
+            "feedin_energy",
             "FeedIn Energy",
             "feedin",
         ),
         FoxESSEnergy(
             coordinator,
-            "feedin_power2",
+            "feedin_energy2",
             "FeedIn Energy 2",
             "feedin2",
         ),
@@ -130,21 +156,6 @@ async def async_setup_entry(
             "month",
             data_key=DATA_DEVICE_GENERATION,
         ),
-        # R
-        FoxESSCurrent(coordinator, "r_current", "R Current", "RCurrent"),
-        FoxESSFrequency(coordinator, "r_frequency", "R Frequency", "RFreq"),
-        FoxESSPower(coordinator, "r_power", "R Power", "RPower"),
-        FoxESSVoltage(coordinator, "r_voltage", "R Voltage", "RVolt"),
-        # T
-        FoxESSCurrent(coordinator, "t_current", "T Current", "TCurrent"),
-        FoxESSFrequency(coordinator, "t_frequency", "T Frequency", "TFreq"),
-        FoxESSPower(coordinator, "t_power", "T Power", "TPower"),
-        FoxESSVoltage(coordinator, "t_voltage", "T Voltage", "TVolt"),
-        # S
-        FoxESSCurrent(coordinator, "s_current", "S Current", "SCurrent"),
-        FoxESSFrequency(coordinator, "s_frequency", "S Frequency", "SFreq"),
-        FoxESSPower(coordinator, "s_power", "S Power", "SPower"),
-        FoxESSVoltage(coordinator, "s_voltage", "S Voltage", "SVolt"),
     ]
     for index in range(1, pv_count + 1):
         entities.extend(
@@ -166,6 +177,71 @@ async def async_setup_entry(
                     f"pv{index}_current",
                     f"PV{index} Current",
                     f"pv{index}Current",
+                ),
+            ]
+        )
+    if coordinator.has_battery():
+        entities.extend(
+            [
+                FoxESSTemperature(
+                    coordinator,
+                    "charge_temperature",
+                    "Charge Temperature",
+                    "chargeTemperature",
+                ),
+                FoxESSTemperature(
+                    coordinator,
+                    "bat_temperature",
+                    "Bat Temperature",
+                    "batTemperature",
+                ),
+                FoxESSVoltage(
+                    coordinator,
+                    "inv_bat_voltage",
+                    "Inverter Bat Voltage",
+                    "invBatVolt",
+                ),
+                FoxESSCurrent(
+                    coordinator,
+                    "inv_bat_current",
+                    "Inverter Bat Current",
+                    "invBatCurrent",
+                ),
+                FoxESSPower(
+                    coordinator,
+                    "inv_bat_power",
+                    "Inverter Bat Power",
+                    "invBatPower",
+                ),
+                FoxESSPower(
+                    coordinator,
+                    "bat_charge_power",
+                    "Bat Charge Power",
+                    "batChargePower",
+                ),
+                FoxESSPower(
+                    coordinator,
+                    "bat_discharge_power",
+                    "Bat Discharge Power",
+                    "batDischargePower",
+                ),
+                FoxESSVoltage(
+                    coordinator,
+                    "bat_voltage",
+                    "Bat Voltage",
+                    "batVolt",
+                ),
+                FoxESSCurrent(
+                    coordinator,
+                    "bat_current",
+                    "Bat Current",
+                    "batCurrent",
+                ),
+                FoxESSSoC(
+                    coordinator,
+                    "bat_soc",
+                    "Bat SoC",
+                    "SoC",
                 ),
             ]
         )
@@ -229,14 +305,17 @@ class FoxESSFloatVariableEntity(FoxESSEntity):
     @property
     def native_value(self) -> float | None:
         """Return the state of the sensor."""
-        return self.coordinator.current_data.get(self.data_key, {}).get(
+        value = self.coordinator.current_data.get(self.data_key, {}).get(
             self.variable, None
         )
+        if value is None:
+            return None
+        return float(value)
 
     @property
     def available(self) -> bool:
         """Return True if the sensor is available."""
-        return self.coordinator.current_data.get(self.data_key) is not None
+        return self.native_value is not None
 
 
 class FoxESSInverterStatus(FoxESSEntity):
@@ -248,7 +327,11 @@ class FoxESSInverterStatus(FoxESSEntity):
     @property
     def native_value(self) -> str | None:
         """Return the state of the sensor."""
-        code = self.coordinator.current_data.get(DATA_DEVICE_DETAIL, {}).get("status")
+        code = self.coordinator.current_data.get(DATA_DEVICE_DETAIL, {}).get(
+            "status", None
+        )
+        if code is None:
+            return None
         return (
             self._attr_options[code - 1]
             if code and 0 < code <= len(self._attr_options)
@@ -258,7 +341,7 @@ class FoxESSInverterStatus(FoxESSEntity):
     @property
     def available(self) -> bool:
         """Return True if the sensor is available."""
-        return self.coordinator.current_data.get(DATA_DEVICE_DETAIL) is not None
+        return self.native_value is not None
 
 
 RUNNING_STATE_MAP = {
@@ -350,3 +433,11 @@ class FoxESSKVar(FoxESSFloatVariableEntity):
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
     _attr_device_class = SensorDeviceClass.REACTIVE_POWER
     _attr_native_unit_of_measurement = UnitOfReactivePower.KILO_VOLT_AMPERE_REACTIVE
+
+
+class FoxESSSoC(FoxESSFloatVariableEntity):
+    """Sensor representing state of charge (SoC)."""
+
+    _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
+    _attr_device_class = SensorDeviceClass.BATTERY
+    _attr_native_unit_of_measurement = "%"

@@ -1,3 +1,5 @@
+"""Constants for the foxess_cloud integration."""
+
 DOMAIN = "foxess_cloud"
 
 CONFIG_API_KEY = "api_key"

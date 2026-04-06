@@ -61,6 +61,14 @@ class FoxESSDataUpdateCoordinator(DataUpdateCoordinator):
         """Get PV count from current data."""
         return self.client.detect_pv_count(self.current_data[DATA_DEVICE_RT_DATA])
 
+    def has_battery(self) -> bool:
+        """Detect if the device has battery based on current data."""
+        device_detail = self.current_data.get(DATA_DEVICE_DETAIL, {})
+        return (
+            bool(device_detail.get("has_battery"))
+            or len(device_detail.get("battery_list", [])) > 0
+        )
+
     async def _async_update_data(self) -> dict[str, Any]:
         """Update data via library."""
 
