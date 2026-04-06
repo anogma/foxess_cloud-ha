@@ -35,7 +35,7 @@ This integration updates data automatically with different refresh intervals per
 |------------------|------------------|
 | Device details   | ~15 minutes      |
 | Generation data  | ~5 minutes       |
-| Real-time data   | ~2 minutes       |
+| Real-time data   | ~1 minute        |
 
 
 ## 🧩 Entities Provided
