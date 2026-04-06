@@ -1,5 +1,11 @@
 # 🌤️ FoxESS Cloud for Home Assistant
 
+<h2 align="center">
+   <a href="https://github.com/anogma/foxess_cloud-ha/actions/workflows/HACS.yaml/badge.svg?branch=main"><img src="https://github.com/anogma/foxess_cloud-ha/actions/workflows/HACS.yaml/badge.svg?branch=main"/></a>
+    <a href="https://github.com/anogma/foxess_cloud-ha/actions/workflows/hassfest.yaml/badge.svg"><img src="https://github.com/anogma/foxess_cloud-ha/actions/workflows/hassfest.yaml/badge.svg"/></a>
+    </br>
+</h2>
+
 A custom [Home Assistant](https://www.home-assistant.io) integration that connects to the **FoxESS Cloud API** to fetch inverter data and expose it as sensor entities ⚡.
 
 This integration uses the **modern UI Flow**, which simplifies the configuration process, requires **no restarts**, and groups sensor entities into **area-capable devices** 🧩.
