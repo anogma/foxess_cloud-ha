@@ -30,7 +30,6 @@ from .const import (
     DATA_DEVICE_RT_DATA,
     DOMAIN,
 )
-from .coordinator import FoxESSDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,8 +41,12 @@ async def async_setup_entry(
 ) -> None:
     """Sensor set up."""
 
-    coordinator = FoxESSDataUpdateCoordinator(hass, config_entry)
-    await coordinator.async_config_entry_first_refresh()
+    _LOGGER.debug(
+        "Setting up sensor platform for device SN: %s",
+        config_entry.data[CONFIG_DEVICE_SN],
+    )
+
+    coordinator = hass.data.get(DOMAIN)[config_entry.entry_id]
 
     pv_count = coordinator.get_pv_count()
     entities = [
@@ -247,6 +250,12 @@ async def async_setup_entry(
         )
 
     async_add_entities(entities)
+
+    _LOGGER.debug(
+        "Finished setting up sensor platform for device SN: %s",
+        config_entry.data[CONFIG_DEVICE_SN],
+    )
+
     return True
 
 
